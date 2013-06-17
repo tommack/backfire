@@ -350,9 +350,16 @@ Backbone.Firebase.Model = Backbone.Model.extend({
   },
 
   _modelChanged: function(snap) {
+    // find parts of model that are objects
+    var newModel = {};
+    snap.forEach(function(child) {
+      if (!child.hasChildren()) {
+        newModel[child.name()] = child.val();
+      }
+    });
+
     // Unset attributes that have been deleted from the server
     // by comparing the keys that have been removed.
-    var newModel = snap.val();
     if (typeof newModel === "object" && newModel !== null) {
       var diff = _.difference(_.keys(this.attributes), _.keys(newModel));
       var _this = this;
